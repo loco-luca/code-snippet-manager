@@ -1,0 +1,13 @@
+setup.py
+code_snippet_manager.egg-info/PKG-INFO
+code_snippet_manager.egg-info/SOURCES.txt
+code_snippet_manager.egg-info/dependency_links.txt
+code_snippet_manager.egg-info/entry_points.txt
+code_snippet_manager.egg-info/requires.txt
+code_snippet_manager.egg-info/top_level.txt
+snippet_manager/__init__.py
+snippet_manager/cli.py
+snippet_manager/logo.py
+snippet_manager/manager.py
+snippet_manager/storage.py
+snippet_manager/utils.py

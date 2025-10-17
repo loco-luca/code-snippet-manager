@@ -1,0 +1,9 @@
+Metadata-Version: 2.4
+Name: code-snippet-manager
+Version: 0.1.0
+Summary: A terminal-based code snippet manager
+Requires-Python: >=3.10
+Requires-Dist: rich>=13.0.0
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary

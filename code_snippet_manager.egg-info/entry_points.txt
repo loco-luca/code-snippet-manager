@@ -1,0 +1,2 @@
+[console_scripts]
+snipman = snippet_manager.cli:system
