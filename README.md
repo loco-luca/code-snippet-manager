@@ -17,6 +17,6 @@ Store, view, search, add, and delete snippets for Python, Rust, and Dart using J
 Clone the repository and install dependencies:
 
 ```bash
-
+https://github.com/loco-luca/code-snippet-manager.git
 cd code-snippet-manager
 pip install -e .
