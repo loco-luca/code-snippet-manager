@@ -20,3 +20,4 @@ Clone the repository and install dependencies:
 https://github.com/loco-luca/code-snippet-manager.git
 cd code-snippet-manager
 pip install -e .
+snipman
