@@ -1,4 +1,5 @@
 # manager
+
 import os
 import json
 
@@ -42,27 +43,47 @@ def delete(item, lang):
 
 def search(words, lang):
     path = get_file_path(lang)
-    with open(path, "r") as f:
-        data = json.load(f)
 
-    for word in data:
-        if word["title"] in words:
-            print(word)
+    if not os.path.exists(path):
+        print("Not Found")
+        return None
+    try:
+        with open(path, "r") as f:
+            data = json.load(f)
+
+        found = False
+        for snippet in data:
+            if isinstance(snippet, dict) and "title" in snippet:
+                if words.lower() in snippet["title"].lower():
+                    print(json.dumps(snippet, indent=4))
+                    found = True
+        if not found:
+            print(f"No matches found for '{words}'.")
+
+    except json.JSONDecodeError:
+        print("Error: Invalid JSON format.")
+        return None
 
 
 def view_snippets(lang):
     path = get_file_path(lang)
-    with open(
-        path,
-        "r",
-    ) as json_file:
-        data = json.load(json_file)
-        print(data)
+
+    if not os.path.exists(path):
+        print("Not Found")
+        return None
+    try:
+        with open(path, "r") as json_file:
+            data = json.load(json_file)
+            print(json.dumps(data, indent=4))
+            return data
+    except json.JSONDecodeError:
+        print("Error: Invalid JSON format in file.")
+        return None
 
 
 def view_options():
     # user Options viewer
-    print("Options avaliable are: ")
+    print("Options available are: ")
     print("1. Add a snippet")
     print("2. Delete a snippet")
     print("3. Search snippets")
