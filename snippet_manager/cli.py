@@ -1,69 +1,75 @@
 # cli
-from .manager import (
-    delete,
-    add,
-    search,
-    view_options,
-    view_snippets,
-)
-from .utils import data_generator_formatted
+# cli/system.py
+from typing import Optional
+from .manager import delete, add, search, view_options, view_snippets
+from .utils import generate_snippet_data
 from .logo import ascii_logo
+
+
+def get_confirmation(prompt: str) -> bool:
+    """Ask for yes/no confirmation."""
+    choice = input(f"{prompt} (y/n): ").strip().lower()
+    return choice == "y"
+
+
+def get_int_input(prompt: str) -> Optional[int]:
+    """Get integer input safely, returning None if invalid."""
+    try:
+        return int(input(prompt))
+    except ValueError:
+        print("Invalid number. Please try again.")
+        return None
+
+
+def handle_choices(choice: int, language: str):
+    """Handle the snippet manager options."""
+    if choice == 1:
+        code_snippet = generate_snippet_data(language)
+        add(code_snippet)
+    elif choice == 2:
+        title = input("Please enter title: ").strip()
+        delete(title, language)
+    elif choice == 3:
+        term = input("Search: ").strip()
+        search(term, language)
+    elif choice == 4:
+        view_snippets(language)
+    else:
+        print("Invalid option selected.")
 
 
 def system():
     ascii_logo()
     print("\n")
-    languages = ["Python", "Rust", "Dart"]
+    supported_languages = ["Python", "Rust", "Dart"]
 
     while True:
-        print(f"Currently languages supported -> {languages}")
-        user_input = input("Select a language or 'q' to quit: ").strip()
+        print(f"Currently supported languages -> {supported_languages}")
+        user_input = input("Select a language or 'q' to quit: ").strip().lower()
 
-        # dealing with empty inputs
-        if not user_input.strip():
-            print("Please enter your choice")
+        if not user_input:
+            print("Please enter your choice.")
             continue
 
-        # closing program logic
-        if user_input.lower() == "q":
-            confirm = input("Are you sure want to quit out of program? (y/n): ")
-            if confirm.lower() == "y":
-                print("Closing Code snippet manager ")
+        if user_input == "q":
+            if get_confirmation("Are you sure you want to quit? "):
+                print("Closing Code Snippet Manager.")
                 break
-            elif confirm.lower() == "n":
-                print("sound bro👌")
-                continue
             else:
-                print("You good bro? 🤨")
-
-        # if statement for manager logic
-        confirm_choice = input(f"Are you sure you want {user_input}? (y/n): ").strip()
-
-        if confirm_choice.lower() == "y":
-            # displays option
-            view_options()
-            try:
-                user_options_choices = int(
-                    input("Enter a number that match your choices: ")
-                )
-            except ValueError:
-                print("Invalid number. Please try again.")
+                print("Back to main menu.")
                 continue
 
-            if user_options_choices == 1:
-                code_snippet = data_generator_formatted(user_input)
-                add(code_snippet)
+        if user_input.capitalize() not in supported_languages:
+            print("Language not supported yet.")
+            continue
 
-            elif user_options_choices == 2:
-                delete_term = input("Please enter title: ").strip()
-                delete(delete_term, user_input)
+        if not get_confirmation(f"Proceed with {user_input.capitalize()}?"):
+            print("Cancelled.")
+            continue
 
-            elif user_options_choices == 3:
-                search_term = input("search: ").strip()
-                search(search_term, user_input)
+        view_options()
+        user_choice = get_int_input("Enter a number matching your choice: ")
+        if user_choice is None:
+            continue
 
-            elif user_options_choices == 4:
-                view_snippets(user_input)
-
-            else:
-                print("No further option from this point onwards")
+        handle_choices(user_choice, user_input)

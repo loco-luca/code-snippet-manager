@@ -2,87 +2,94 @@
 
 import os
 import json
+from typing import Any, List, Dict, Optional
+
+SNIPPETS_DIR = "snippets"
 
 
-def get_file_path(lang):
-    os.makedirs("snippets", exist_ok=True)
-    return f"snippets/{lang.lower()}.json"
+def get_file_path(lang: str):
+    """Return the JSON file path for the given language"""
+    os.makedirs(SNIPPETS_DIR, exist_ok=True)
+    return os.path.join(SNIPPETS_DIR, f"{lang.lower()}.json")
 
 
-def add(snippets):
-    lang = snippets["language"]
-    file_path = get_file_path(lang)
-    os.makedirs("snippets", exist_ok=True)
-
-    # If file exists, load existing snippets
-    if os.path.exists(file_path):
+def _read_json(file_path: str) -> List[Dict[str, Any]]:
+    """Read JSON data safely, returning an empty list if missing or invaild."""
+    if not os.path.exists(file_path):
+        return []
+    try:
         with open(file_path, "r", encoding="utf-8") as f:
-            try:
-                data = json.load(f)
-            except json.JSONDecodeError:
-                data = []
-    else:
-        data = []
-    # Append the new snippets
-    data.append(snippets)
+            return json.load(f)
+    except (json.JSONDecodeError, FileNotFoundError):
+        print(f"Warning: {file_path} was invaild or empty. Resettings file.")
+        return []
 
-    # Write updated data back to file
+
+def _write_json(file_path: str, data: List[Dict[str, Any]]) -> None:
+    """Write JSON data safely"""
     with open(file_path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=4)
 
 
-def delete(item, lang):
-    path = get_file_path(lang)
-    with open(path, "r") as f:
-        data = json.load(f)
-    new_data = [snippet for snippet in data if snippet["title"] != item]
-    with open(path, "w") as f:
-        json.dump(new_data, f, indent=4)
+def add(snippets: Dict[str, Any]) -> bool:
+    """Add a new snippets to the JSON file for the given language"""
+    lang = snippets.get("language")
+    if not lang:
+        print("Error: snippets missing'language' key.")
+        return False
 
-    print(f"Deleted snippet(s) with title '{item}' (if existed).")
+    file_path = get_file_path(lang)
+    data = _read_json(file_path)
+    data.append(snippets)
+    _write_json(file_path, data)
+
+    print(f"✅ Added snippet: {snippets.get('title', 'Untitled')} to {lang}")
+    return True
 
 
-def search(words, lang):
-    path = get_file_path(lang)
+def delete(title: str, lang: str) -> bool:
+    file_path = get_file_path(lang)
+    data = _read_json(file_path)
 
-    if not os.path.exists(path):
-        print("Not Found")
+    new_data = [s for s in data if s.get("title") != title]
+    if len(new_data) == len(data):
+        print(f"⚠️ No snippet found with title '{title}'.")
+        return False
+    _write_json(file_path, new_data)
+    print(f"🗑️ Deleted snippet '{title}' from {lang}.")
+    return True
+
+
+def search(term: str, lang: str) -> Optional[List[Dict[str, Any]]]:
+    """Search for snippets containing the termm in their title"""
+    file_path = get_file_path(lang)
+    data = _read_json(file_path)
+    results = [
+        s
+        for s in data
+        if isinstance(s, dict) and term.lower() in s.get("title", "").lower()
+    ]
+
+    if not results:
+        print(f"No matches found for '{term}':")
+        print(json.dumps(results, indent=4))
+        return results
+
+
+def view_snippets(lang: str) -> Optional[List[Dict[str, Any]]]:
+    """View all snippets for a given language"""
+    file_path = get_file_path(lang)
+    data = _read_json(file_path)
+    if not data:
+        print(f"No snippets found for {lang}.")
         return None
-    try:
-        with open(path, "r") as f:
-            data = json.load(f)
 
-        found = False
-        for snippet in data:
-            if isinstance(snippet, dict) and "title" in snippet:
-                if words.lower() in snippet["title"].lower():
-                    print(json.dumps(snippet, indent=4))
-                    found = True
-        if not found:
-            print(f"No matches found for '{words}'.")
-
-    except json.JSONDecodeError:
-        print("Error: Invalid JSON format.")
-        return None
+    print(f"📚 All snippets for {lang}:")
+    print(json.dumps(data, indent=4))
+    return data
 
 
-def view_snippets(lang):
-    path = get_file_path(lang)
-
-    if not os.path.exists(path):
-        print("Not Found")
-        return None
-    try:
-        with open(path, "r") as json_file:
-            data = json.load(json_file)
-            print(json.dumps(data, indent=4))
-            return data
-    except json.JSONDecodeError:
-        print("Error: Invalid JSON format in file.")
-        return None
-
-
-def view_options():
+def view_options() -> None:
     # user Options viewer
     print("Options available are: ")
     print("1. Add a snippet")
