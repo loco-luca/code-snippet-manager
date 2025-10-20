@@ -48,6 +48,7 @@ def add(snippets: Dict[str, Any]) -> bool:
 
 
 def delete(title: str, lang: str) -> bool:
+    """Delete a snippet by title."""
     file_path = get_file_path(lang)
     data = _read_json(file_path)
 
@@ -61,7 +62,7 @@ def delete(title: str, lang: str) -> bool:
 
 
 def search(term: str, lang: str) -> Optional[List[Dict[str, Any]]]:
-    """Search for snippets containing the termm in their title"""
+    """Search for snippets containing the term in their title and print them."""
     file_path = get_file_path(lang)
     data = _read_json(file_path)
     results = [
@@ -73,7 +74,17 @@ def search(term: str, lang: str) -> Optional[List[Dict[str, Any]]]:
     if not results:
         print(f"No matches found for '{term}':")
         print(json.dumps(results, indent=4))
-        return results
+
+    print(f"\nFound {len(results)} match(es) for '{term}':\n")
+    for snippets in results:
+        title = snippets.get("title", "Untitled")
+        code = snippets.get("code", "[No code available]")
+        print(f"📘 Title: {title}")
+        print("─" * 60)
+        print(code)
+        print("─" * 60 + "\n")
+
+    return results
 
 
 def view_snippets(lang: str) -> Optional[List[Dict[str, Any]]]:
