@@ -64,6 +64,6 @@ def system():
 
             elif user_options_choices == 4:
                 view_snippets(user_input)
-                print("view_snippets")
+
             else:
                 print("No further option from this point onwards")
