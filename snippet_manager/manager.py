@@ -9,7 +9,8 @@ def get_file_path(lang):
     return f"snippets/{lang.lower()}.json"
 
 
-def add(lang, snippets):
+def add(snippets):
+    lang = snippets["language"]
     file_path = get_file_path(lang)
     os.makedirs("snippets", exist_ok=True)
 

@@ -1,6 +1,3 @@
-import shutil
-
-
 def ascii_logo():
     # System logo for project
     art = """

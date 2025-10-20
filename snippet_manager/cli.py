@@ -51,8 +51,8 @@ def system():
                 continue
 
             if user_options_choices == 1:
-                code_snippet = data_generator_formatted()
-                add(user_input, code_snippet)
+                code_snippet = data_generator_formatted(user_input)
+                add(code_snippet)
 
             elif user_options_choices == 2:
                 delete_term = input("Please enter title: ").strip()

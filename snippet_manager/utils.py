@@ -1,5 +1,6 @@
 from .storage import CodeSnippets
 from dataclasses import asdict
+from .manager import get_file_path
 import uuid
 import shutil
 
@@ -16,10 +17,10 @@ def data_formator(title, language, code):
     )
 
 
-def data_generator_formatted():
+def data_generator_formatted(lang: str):
     # complies data into dictionary so the json can process it
     title = input("Enter snippet title: ").strip()
-    language = input("Enter programming language: ").strip()
+    language = lang.strip()
     code = input("Enter code snippet: ").strip()
     return data_formator(title, language, code)
 
