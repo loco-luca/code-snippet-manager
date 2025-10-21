@@ -1,8 +1,8 @@
 from .storage import CodeSnippets
 from dataclasses import asdict
-from .manager import get_file_path
 import uuid
 import shutil
+from .manager import *
 
 
 def format_snippets_data(title: str, language: str, code: str) -> dict:
@@ -32,3 +32,35 @@ def print_centered(text: str) -> None:
 
     for line in text.splitlines():
         print(line.center(width))
+
+
+def get_confirmation(prompt: str) -> bool:
+    """Ask for yes/no confirmation."""
+    choice = input(f"{prompt} (y/n): ").strip().lower()
+    return choice == "y"
+
+
+def get_int_input(prompt: str) -> Optional[int]:
+    """Get integer input safely, returning None if invalid."""
+    try:
+        return int(input(prompt))
+    except ValueError:
+        print("Invalid number. Please try again.")
+        return None
+
+
+def handle_choices(choice: int, language: str):
+    """Handle the snippet manager options."""
+    if choice == 1:
+        code_snippet = generate_snippet_data(language)
+        add(code_snippet)
+    elif choice == 2:
+        title = input("Please enter title: ").strip()
+        delete(title, language)
+    elif choice == 3:
+        term = input("Search: ").strip()
+        search(term, language)
+    elif choice == 4:
+        view_snippets(language)
+    else:
+        print("Invalid option selected.")
